@@ -1,0 +1,330 @@
+openapi: 3.1.0
+info:
+  title: Todo-List REST API
+  description: REST-Schnittstelle zur Verwaltung von Todo-Listen und deren Einträgen (IFA43)
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+
+servers:
+  - url: http://127.0.0.1:5000/
+    description: Produktionsserver
+
+tags:
+  - name: Todo-Listen
+    description: Operationen auf Todo-Listen
+  - name: Einträge
+    description: Operationen auf einzelnen Einträgen
+
+paths:
+
+  /todo-list:
+    get:
+      tags:
+        - Todo-Listen
+      summary: Alle Todo-Listen abrufen
+      description: Liefert alle vorhandenen Todo-Listen zurück.
+      responses:
+        '200':
+          description: Erfolgreiches Abrufen aller Listen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoList'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+ 
+    post:
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: Name der neuen Liste
+          schema:
+            type: string
+
+      tags:
+        - Todo-Listen
+      summary: Neue Todo-Liste erstellen
+      description: Fügt eine neue Todo-Liste hinzu.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoListInput'
+      responses:
+        '201':
+          description: Todo-Liste erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /todo-list/{list_id}:
+    parameters:
+      - name: list_id
+        in: path
+        required: true
+        description: ID der gewünschten Todo-Liste
+        schema:
+          type: string
+
+    get:
+      tags:
+        - Todo-Listen
+      summary: Einträge einer Todo-Liste abrufen
+      description: Liefert alle Einträge einer bestimmten Todo-Liste zurück.
+      responses:
+        '200':
+          description: Erfolgreiches Abrufen der Einträge
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoEntry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+    post:
+      tags:
+        - Einträge
+      summary: Eintrag zu einer Todo-Liste hinzufügen
+      description: Fügt einen neuen Eintrag zu einer bestehenden Todo-Liste hinzu.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoEntryInput'
+      responses:
+        '201':
+          description: Eintrag erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoEntry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+    delete:
+      tags:
+        - Todo-Listen
+      summary: Todo-Liste löschen
+      description: Löscht eine komplette Todo-Liste mit allen Einträgen.
+      responses:
+        '204':
+          description: Todo-Liste erfolgreich gelöscht
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+  /todo-list/entry/{entry_id}:
+    parameters:
+      - name: entry_id
+        in: path
+        required: true
+        description: ID des gewünschten Eintrags
+        schema:
+          type: string
+
+    patch:
+      tags:
+        - Einträge
+      summary: Eintrag aktualisieren
+      description: Aktualisiert einen bestehenden Eintrag einer Todo-Liste.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoEntryInput'
+      responses:
+        '200':
+          description: Eintrag erfolgreich aktualisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoEntry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+    delete:
+      tags:
+        - Einträge
+      summary: Eintrag löschen
+      description: Löscht einen einzelnen Eintrag einer Todo-Liste.
+      responses:
+        '204':
+          description: Eintrag erfolgreich gelöscht
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+
+components:
+
+  schemas:
+    TodoList:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Eindeutige ID der Todo-Liste
+        name:
+          type: string
+          description: Name der Todo-Liste
+      required:
+        - id
+        - name
+
+    TodoListInput:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name der neuen Todo-Liste
+      required:
+        - name
+
+    TodoEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Eindeutige ID des Eintrags
+        name:
+          type: string
+          description: Name des Eintrags
+        description:
+          type: string
+          description: Beschreibung des Eintrags
+      required:
+        - id
+        - name
+
+    TodoEntryInput:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name des Eintrags
+        description:
+          type: string
+          description: Beschreibung des Eintrags
+      required:
+        - name
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: HTTP-Statuscode
+        message:
+          type: string
+          description: Fehlerbeschreibung
+
+  responses:
+    BadRequest:
+      description: Ungültiger Request-Body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Ressource nicht gefunden (ungültige ID)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    MethodNotAllowed:
+      description: Ungültige HTTP-Methode auf diesem Endpunkt
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    TooManyRequests:
+      description: Zu viele Anfragen (Rate Limit überschritten)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Interner Serverfehler
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    BadGateway:
+      description: Ungültiger Endpunkt aufgerufen
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
