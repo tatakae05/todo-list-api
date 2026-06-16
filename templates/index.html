@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo Listen</title>
+</head>
+<body>
+    <h1>Todo Listen</h1>
+
+    <form method="post">
+        <input type="text" name="name" placeholder="Neue Liste" required>
+        <button type="submit">Anlegen</button>
+    </form>
+
+    <hr>
+
+    <ul>
+        {% for item in todo_lists %}
+        <li>
+            <strong>{{ item.name }}</strong><br>
+            ID: {{ item.id }}
+        </li>
+        {% else %}
+        <li>Keine Listen vorhanden</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

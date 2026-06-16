@@ -9,32 +9,16 @@ Requirements:
 
 import uuid 
 
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, render_template, redirect
 
 
 # initialize Flask server
 app = Flask(__name__)
 
-# create unique id for lists, entries
-todo_list_1_id = str(uuid.uuid4())
-todo_list_2_id = str(uuid.uuid4())
-todo_list_3_id = str(uuid.uuid4())
-todo_1_id = str(uuid.uuid4())
-todo_2_id = str(uuid.uuid4())
-todo_3_id = str(uuid.uuid4())
-todo_4_id = str(uuid.uuid4())
-
 # define internal data structures with example data
 todo_lists = [
-    {'id': todo_list_1_id, 'name': 'Einkaufsliste'},
-    {'id': todo_list_2_id, 'name': 'Arbeit'},
-    {'id': todo_list_3_id, 'name': 'Privat'},
 ]
 todos = [
-    {'id': todo_1_id, 'name': 'Milch', 'description': '', 'list': todo_list_1_id},
-    {'id': todo_2_id, 'name': 'Arbeitsblätter ausdrucken', 'description': '', 'list': todo_list_2_id},
-    {'id': todo_3_id, 'name': 'Kinokarten kaufen', 'description': '', 'list': todo_list_3_id},
-    {'id': todo_3_id, 'name': 'Eier', 'description': '', 'list': todo_list_1_id},
 ]
 
 # add some headers to allow cross origin access to the API on this server, necessary for using preview in Swagger Editor!
@@ -44,6 +28,15 @@ def apply_cors_header(response):
     response.headers['Access-Control-Allow-Methods'] = 'GET,POST,DELETE, PATCH'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return response
+
+@app.route('/', methods=['GET', 'POST']) 
+def index(): 
+    if request.method == 'POST': 
+        name = request.form.get('name') 
+    if name: 
+        todo_lists.append({ 'id': str(uuid.uuid4()), 'name': name }) 
+        return redirect('/') 
+    return render_template('index.html', todo_lists=todo_lists)
 
 @app.route('/todo-list', methods=['GET', 'POST'])
 def handle_CreateList():
@@ -110,5 +103,4 @@ def handle_entry(entry_id):
 
 if __name__ == '__main__':
     # start Flask server
-    app.debug = True
     app.run(host='0.0.0.0', port=5000)
