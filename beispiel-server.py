@@ -33,9 +33,9 @@ def apply_cors_header(response):
 def index(): 
     if request.method == 'POST': 
         name = request.form.get('name') 
-    if name: 
-        todo_lists.append({ 'id': str(uuid.uuid4()), 'name': name }) 
-        return redirect('/') 
+        if name: 
+            todo_lists.append({ 'id': str(uuid.uuid4()), 'name': name }) 
+            return redirect('/') 
     return render_template('index.html', todo_lists=todo_lists)
 
 @app.route('/todo-list', methods=['GET', 'POST'])
