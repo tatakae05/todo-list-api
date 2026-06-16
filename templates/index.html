@@ -1,28 +1,49 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Todo Listen</title>
+<title>Todo Verwaltung</title>
 </head>
+
 <body>
-    <h1>Todo Listen</h1>
 
-    <form method="post">
-        <input type="text" name="name" placeholder="Neue Liste" required>
-        <button type="submit">Anlegen</button>
-    </form>
+<h1>Meine Todo Listen</h1>
 
-    <hr>
 
-    <ul>
-        {% for item in todo_lists %}
-        <li>
-            <strong>{{ item.name }}</strong><br>
-            ID: {{ item.id }}
-        </li>
-        {% else %}
-        <li>Keine Listen vorhanden</li>
-        {% endfor %}
-    </ul>
+<form method="post" action="/create-list">
+
+<input name="name"
+placeholder="Neue Liste">
+
+<button>
+Erstellen
+</button>
+
+</form>
+
+
+<hr>
+
+
+{% for l in todo_lists %}
+
+<h3>
+<a href="/list/{{l.id}}">
+{{l.name}}
+</a>
+</h3>
+
+
+<a href="/delete-list/{{l.id}}">
+Löschen
+</a>
+
+
+{% else %}
+
+<p>Noch keine Listen vorhanden</p>
+
+{% endfor %}
+
+
 </body>
 </html>

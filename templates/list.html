@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>{{todo_list.name}}</title>
+</head>
+
+
+<body>
+
+
+<a href="/">
+← zurück
+</a>
+
+
+<h1>
+{{todo_list.name}}
+</h1>
+
+
+
+<form method="post"
+action="/create-todo/{{todo_list.id}}">
+
+
+<input name="name"
+placeholder="Todo Name">
+
+
+<br>
+
+
+<textarea name="description"
+placeholder="Beschreibung">
+</textarea>
+
+
+<br>
+
+<button>
+Todo hinzufügen
+</button>
+
+
+</form>
+
+
+
+<hr>
+
+
+<h2>Aufgaben</h2>
+
+
+{% for todo in todos %}
+
+
+<h3>
+{{todo.name}}
+</h3>
+
+
+<p>
+{{todo.description}}
+</p>
+
+
+<a href="/delete-todo/{{todo.id}}">
+Löschen
+</a>
+
+
+<hr>
+
+
+{% else %}
+
+<p>Keine Aufgaben</p>
+
+{% endfor %}
+
+
+</body>
+</html>

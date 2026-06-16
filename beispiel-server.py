@@ -9,7 +9,7 @@ Requirements:
 
 import uuid 
 
-from flask import Flask, request, jsonify, abort, render_template, redirect
+from flask import Flask, request, jsonify, abort, render_template, redirect, url_for
 
 
 # initialize Flask server
@@ -29,14 +29,100 @@ def apply_cors_header(response):
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return response
 
-@app.route('/', methods=['GET', 'POST']) 
-def index(): 
-    if request.method == 'POST': 
-        name = request.form.get('name') 
-        if name: 
-            todo_lists.append({ 'id': str(uuid.uuid4()), 'name': name }) 
-            return redirect('/') 
-    return render_template('index.html', todo_lists=todo_lists)
+@app.route("/")
+def index():
+    return render_template(
+        "index.html",
+        todo_lists=todo_lists
+    )
+
+
+@app.route("/create-list", methods=["POST"])
+def create_list():
+    name = request.form.get("name")
+
+    if name:
+        todo_lists.append({
+            "id": str(uuid.uuid4()),
+            "name": name
+        })
+
+    return redirect("/")
+
+
+@app.route("/list/<list_id>")
+def show_list(list_id):
+
+    current_list = None
+
+    for l in todo_lists:
+        if l["id"] == list_id:
+            current_list = l
+
+    if not current_list:
+        abort(404)
+
+    entries = [
+        t for t in todos
+        if t["list"] == list_id
+    ]
+
+    return render_template(
+        "list.html",
+        todo_list=current_list,
+        todos=entries
+    )
+
+
+@app.route("/create-todo/<list_id>", methods=["POST"])
+def create_todo(list_id):
+
+    name = request.form.get("name")
+    description = request.form.get("description")
+
+    if name:
+
+        todos.append({
+            "id": str(uuid.uuid4()),
+            "name": name,
+            "description": description,
+            "list": list_id
+        })
+
+    return redirect(
+        url_for("show_list", list_id=list_id)
+    )
+
+
+@app.route("/delete-todo/<todo_id>")
+def delete_todo(todo_id):
+
+    for todo in todos:
+        if todo["id"] == todo_id:
+            todos.remove(todo)
+            break
+
+    return redirect(request.referrer)
+
+
+@app.route("/delete-list/<list_id>")
+def delete_list(list_id):
+
+    global todo_lists
+
+    todo_lists = [
+        l for l in todo_lists
+        if l["id"] != list_id
+    ]
+
+    global todos
+
+    todos = [
+        t for t in todos
+        if t["list"] != list_id
+    ]
+
+    return redirect("/")
 
 @app.route('/todo-list', methods=['GET', 'POST'])
 def handle_CreateList():
