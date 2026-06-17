@@ -1,4 +1,3 @@
-
 """
 Example script showing how to represent todo lists and todo entries in Python
 data structures and how to implement endpoint for a REST API with Flask.
@@ -88,6 +87,25 @@ def create_todo(list_id):
             "description": description,
             "list": list_id
         })
+
+    return redirect(
+        url_for("show_list", list_id=list_id)
+    )
+
+
+@app.route("/edit-todo/<todo_id>", methods=["POST"])
+def edit_todo(todo_id):
+
+    name = request.form.get("name")
+    description = request.form.get("description")
+    list_id = request.form.get("list_id")
+
+    for todo in todos:
+        if todo["id"] == todo_id:
+            if name:
+                todo["name"] = name
+            todo["description"] = description
+            break
 
     return redirect(
         url_for("show_list", list_id=list_id)

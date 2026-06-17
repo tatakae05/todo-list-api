@@ -1,49 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Todo Verwaltung</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-<h1>Meine Todo Listen</h1>
+<header class="page-head">
+  <h1>Todo-Listen</h1>
+</header>
 
-
-<form method="post" action="/create-list">
-
-<input name="name"
-placeholder="Neue Liste">
-
-<button>
-Erstellen
-</button>
-
+<form class="entry-form" method="post" action="/create-list">
+  <input name="name" placeholder="Name der neuen Liste" required>
+  <button class="btn" type="submit">Liste anlegen</button>
 </form>
 
-
-<hr>
-
-
+<div class="card-stack">
 {% for l in todo_lists %}
-
-<h3>
-<a href="/list/{{l.id}}">
-{{l.name}}
-</a>
-</h3>
-
-
-<a href="/delete-list/{{l.id}}">
-Löschen
-</a>
-
-
+  <div class="index-card">
+    <a class="card-title" href="/list/{{ l.id }}">{{ l.name }}</a>
+    <a class="delete-link" href="/delete-list/{{ l.id }}">Löschen</a>
+  </div>
 {% else %}
-
-<p>Noch keine Listen vorhanden</p>
-
+  <p class="empty-note">Noch keine Listen vorhanden — oben eine anlegen.</p>
 {% endfor %}
-
+</div>
 
 </body>
 </html>

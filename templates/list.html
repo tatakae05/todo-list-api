@@ -1,85 +1,80 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="de">
 <head>
-<title>{{todo_list.name}}</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ todo_list.name }} — Todo Verwaltung</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 
 <body>
 
+<div class="list-wrapper">
 
-<a href="/">
-← zurück
-</a>
+  <a class="back-link" href="/">Zurück zu allen Listen</a>
 
+  <header class="page-head">
+    <span class="page-eyebrow">Liste</span>
+    <h1>{{ todo_list.name }}</h1>
+  </header>
 
-<h1>
-{{todo_list.name}}
-</h1>
+  <form class="entry-form stacked" method="post" action="/create-todo/{{ todo_list.id }}">
+    <input name="name" placeholder="Aufgabe" required>
+    <textarea name="description" placeholder="Beschreibung (optional)"></textarea>
+    <button class="btn" type="submit">Aufgabe hinzufügen</button>
+  </form>
 
+  <h2 class="section-label">Aufgaben</h2>
 
+  {% for todo in todos %}
+    <div class="todo-card" id="todo-{{ todo.id }}">
 
-<form method="post"
-action="/create-todo/{{todo_list.id}}">
+      <div class="todo-view">
+        <h3>{{ todo.name }}</h3>
+        {% if todo.description %}
+          <p>{{ todo.description }}</p>
+        {% endif %}
+        <div class="todo-actions">
+          <button type="button" class="edit-toggle" data-todo-id="{{ todo.id }}">Bearbeiten</button>
+          <a class="delete-link" href="/delete-todo/{{ todo.id }}">Löschen</a>
+        </div>
+      </div>
 
+      <form class="todo-edit-form" method="post" action="/edit-todo/{{ todo.id }}" hidden>
+        <input type="hidden" name="list_id" value="{{ todo_list.id }}">
+        <input type="text" name="name" value="{{ todo.name }}" required>
+        <textarea name="description">{{ todo.description or '' }}</textarea>
+        <div class="todo-actions">
+          <button type="submit" class="btn btn-small">Speichern</button>
+          <button type="button" class="cancel-edit" data-todo-id="{{ todo.id }}">Abbrechen</button>
+        </div>
+      </form>
 
-<input name="name"
-placeholder="Todo Name">
+    </div>
+  {% else %}
+    <p class="empty-note">Noch keine Aufgaben in dieser Liste.</p>
+  {% endfor %}
 
+</div>
 
-<br>
+<script>
+  document.querySelectorAll('.edit-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var card = document.getElementById('todo-' + btn.dataset.todoId);
+      card.querySelector('.todo-view').hidden = true;
+      card.querySelector('.todo-edit-form').hidden = false;
+      card.querySelector('.todo-edit-form input[name="name"]').focus();
+    });
+  });
 
-
-<textarea name="description"
-placeholder="Beschreibung">
-</textarea>
-
-
-<br>
-
-<button>
-Todo hinzufügen
-</button>
-
-
-</form>
-
-
-
-<hr>
-
-
-<h2>Aufgaben</h2>
-
-
-{% for todo in todos %}
-
-
-<h3>
-{{todo.name}}
-</h3>
-
-
-<p>
-{{todo.description}}
-</p>
-
-
-<a href="/delete-todo/{{todo.id}}">
-Löschen
-</a>
-
-
-<hr>
-
-
-{% else %}
-
-<p>Keine Aufgaben</p>
-
-{% endfor %}
-
+  document.querySelectorAll('.cancel-edit').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var card = document.getElementById('todo-' + btn.dataset.todoId);
+      card.querySelector('.todo-edit-form').hidden = true;
+      card.querySelector('.todo-view').hidden = false;
+    });
+  });
+</script>
 
 </body>
 </html>
