@@ -9,7 +9,7 @@ network:
     eth0:
       dhcp4: no
       addresses:
-        - 192.168.24.200/24
+        - 192.168.24.108/24
       routes:
         - to: default
           via: 192.168.24.254
